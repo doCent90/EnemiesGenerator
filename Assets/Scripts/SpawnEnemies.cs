@@ -4,35 +4,23 @@ using UnityEngine;
 
 public class SpawnEnemies : MonoBehaviour
 {
+    [SerializeField] private List<Transform> _spawnGate;
     [SerializeField] private GameObject _enemy;
-
-    private Transform[] _spawnGate;
 
     private void Start()
     {
-        _spawnGate = new Transform[gameObject.GetComponentsInChildren<Transform>().Length];
+        StartCoroutine(Spawn(2));
+    }
 
-        for (int i = 0; i < _spawnGate.Length; i++)
+    private IEnumerator Spawn(float delay)
+    {
+        while (true)
         {
-            _spawnGate[i] = gameObject.GetComponentsInChildren<Transform>()[i];
+            var waitForSeconds = new WaitForSeconds(delay);
+            yield return waitForSeconds;
+
+            Vector3 position = _spawnGate[Random.Range(0, _spawnGate.Count)].position;
+            Instantiate(_enemy, position, Quaternion.identity);
         }
-
-        StartCoroutine(Spawn(2));
-    }
-
-    private IEnumerator Spawn(float seconds)
-    {
-        var waitForSeconds = new WaitForSeconds(seconds);
-        yield return waitForSeconds;
-
-        Vector3 position = _spawnGate[Random.Range(0, _spawnGate.Length)].position;
-        Instantiate(_enemy, position, Quaternion.identity);
-
-        RepeatSpawn();
-    }
-
-    private void RepeatSpawn()
-    {
-        StartCoroutine(Spawn(2));
     }
 }
